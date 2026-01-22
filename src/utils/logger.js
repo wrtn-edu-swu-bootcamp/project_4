@@ -10,8 +10,12 @@ const LOG_LEVEL = {
   ERROR: 3,
 };
 
-// 현재 로그 레벨 (프로덕션에서는 WARN 이상만)
-const CURRENT_LEVEL = process.env.NODE_ENV === 'production' ? LOG_LEVEL.WARN : LOG_LEVEL.DEBUG;
+// 현재 로그 레벨 (개발 모드에서는 DEBUG, 그 외에는 WARN)
+// Chrome Extension에서는 process가 없으므로 안전하게 체크
+const isDev = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest 
+  ? !('update_url' in chrome.runtime.getManifest()) // update_url이 없으면 개발 모드
+  : true;
+const CURRENT_LEVEL = isDev ? LOG_LEVEL.DEBUG : LOG_LEVEL.WARN;
 
 const PREFIX = '[금융용어]';
 

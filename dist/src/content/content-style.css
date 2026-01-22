@@ -1,0 +1,16 @@
+/**
+ * Content Script 스타일
+ * 페이지에 주입되는 최소한의 스타일
+ */
+
+/* 팝업 컨테이너 (Shadow DOM 외부) */
+#financial-terms-popup {
+  position: absolute;
+  z-index: 2147483647; /* 최상위 */
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+/* 페이지 스크롤 시 팝업이 자연스럽게 따라가도록 */
+#financial-terms-popup {
+  will-change: transform;
+}

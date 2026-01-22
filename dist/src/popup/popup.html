@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>금융 용어 쉽게</title>
+    <script type="module" crossorigin src="/assets/popup-BcMOFGQw.js"></script>
+    <link rel="stylesheet" crossorigin href="/src/popup.css">
+  </head>
+  <body>
+    <div class="popup-container">
+      <header class="popup-header">
+        <h1 class="popup-title">금융 용어 쉽게</h1>
+        <span class="popup-version">v1.0.0</span>
+      </header>
+
+      <main class="popup-main">
+        <div class="status-section">
+          <div class="status-label">서비스 상태</div>
+          <div class="status-toggle">
+            <label class="toggle">
+              <input type="checkbox" id="enableToggle" class="toggle-input" checked />
+              <span class="toggle-slider"></span>
+            </label>
+            <span id="statusText" class="status-text">활성</span>
+          </div>
+        </div>
+
+        <div class="usage-guide">
+          <p>웹페이지에서 금융 용어를 드래그하거나 더블클릭하면 설명이 표시됩니다.</p>
+        </div>
+
+        <div class="stats-section">
+          <div class="stat-item">
+            <span class="stat-label">등록된 용어</span>
+            <span class="stat-value" id="termCount">50개</span>
+          </div>
+        </div>
+      </main>
+
+      <footer class="popup-footer">
+        <p class="popup-disclaimer">
+          본 서비스는 참고용 정보를 제공합니다.<br />
+          정확한 정보는 해당 금융기관에 확인하세요.
+        </p>
+      </footer>
+    </div>
+
+  </body>
+</html>

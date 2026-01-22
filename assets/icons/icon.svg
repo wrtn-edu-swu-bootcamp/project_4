@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#4A5B6C"/>
+  
+  <!-- Book/Document icon -->
+  <rect x="32" y="28" width="64" height="72" rx="4" fill="#ffffff"/>
+  
+  <!-- Lines representing text -->
+  <rect x="40" y="40" width="36" height="4" rx="2" fill="#5C8A95"/>
+  <rect x="40" y="52" width="48" height="3" rx="1.5" fill="#D1D4DA"/>
+  <rect x="40" y="60" width="44" height="3" rx="1.5" fill="#D1D4DA"/>
+  <rect x="40" y="68" width="40" height="3" rx="1.5" fill="#D1D4DA"/>
+  
+  <!-- Magnifying glass / Search -->
+  <circle cx="80" cy="84" r="12" fill="none" stroke="#5C8A95" stroke-width="4"/>
+  <line x1="88" y1="92" x2="96" y2="100" stroke="#5C8A95" stroke-width="4" stroke-linecap="round"/>
+  
+  <!-- Question mark hint -->
+  <text x="80" y="88" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#5C8A95" text-anchor="middle">?</text>
+</svg>

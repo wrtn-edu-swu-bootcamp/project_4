@@ -3,8 +3,7 @@
  * 설정 페이지 관리
  */
 
-import { getSettings, saveSettings } from '../utils/storage.js';
-import { getAllTerms } from '../utils/storage.js';
+import { getSettings, saveSettings, getTermsCount } from '../utils/storage.js';
 
 // DOM 요소
 const enableService = document.getElementById('enableService');
@@ -31,8 +30,8 @@ async function init() {
   hoverPreview.checked = settings.hoverPreviewEnabled;
   allowAnalytics.checked = settings.allowAnalytics;
 
-  // 용어 수 불러오기
-  await loadTermCount();
+  // 용어 수 불러오기 (동기 함수)
+  loadTermCount();
 
   // 이벤트 리스너
   enableService.addEventListener('change', handleSave);
@@ -82,10 +81,10 @@ function showSaveStatus(message, type = 'success') {
 /**
  * 용어 수 불러오기
  */
-async function loadTermCount() {
+function loadTermCount() {
   try {
-    const terms = await getAllTerms();
-    termCount.textContent = `${terms.length}개`;
+    const count = getTermsCount();
+    termCount.textContent = `${count}개`;
   } catch (error) {
     console.error('Failed to load term count:', error);
     termCount.textContent = '불러오기 실패';

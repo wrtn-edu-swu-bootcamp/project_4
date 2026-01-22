@@ -40,7 +40,7 @@ async function init() {
 /**
  * 텍스트 선택 핸들러
  */
-async function handleTextSelection(selection) {
+function handleTextSelection(selection) {
   if (!isEnabled) {
     return;
   }
@@ -48,8 +48,8 @@ async function handleTextSelection(selection) {
   const { text, rect } = selection;
 
   try {
-    // 용어 검색
-    const term = await findTerm(text);
+    // 용어 검색 (동기 함수)
+    const term = findTerm(text);
 
     if (term) {
       // 용어 팝업 표시

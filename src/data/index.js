@@ -10,15 +10,26 @@ import depositProtectionTerms from './terms/deposit-protection.json';
 import specialProductsTerms from './terms/special-products.json';
 
 /**
+ * 각 용어에 카테고리 추가
+ */
+function addCategoryToTerms(termsData) {
+  const category = termsData.category || '금융 용어';
+  return termsData.terms.map(term => ({
+    ...term,
+    category,
+  }));
+}
+
+/**
  * 모든 용어를 하나의 배열로 통합
  */
 export function getAllTermsData() {
   const allTerms = [
-    ...interestRateTerms.terms,
-    ...productStructureTerms.terms,
-    ...taxCostTerms.terms,
-    ...depositProtectionTerms.terms,
-    ...specialProductsTerms.terms,
+    ...addCategoryToTerms(interestRateTerms),
+    ...addCategoryToTerms(productStructureTerms),
+    ...addCategoryToTerms(taxCostTerms),
+    ...addCategoryToTerms(depositProtectionTerms),
+    ...addCategoryToTerms(specialProductsTerms),
   ];
 
   return allTerms;

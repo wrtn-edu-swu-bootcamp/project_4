@@ -1,18 +1,14 @@
 /**
  * Popup Script
- * 툴바 아이콘 클릭 시 표시되는 팝업
+ * 툴바 아이콘 클릭 시 표시되는 팝업 (MVP 버전)
  */
 
-import { getSettings, saveSetting } from '../utils/storage.js';
-import { getAllTerms } from '../utils/storage.js';
+import { getSettings, saveSetting, getTermsCount } from '../utils/storage.js';
 
 // DOM 요소
 const enableToggle = document.getElementById('enableToggle');
 const statusText = document.getElementById('statusText');
 const termCount = document.getElementById('termCount');
-const todayCount = document.getElementById('todayCount');
-const settingsBtn = document.getElementById('settingsBtn');
-const helpBtn = document.getElementById('helpBtn');
 
 /**
  * 초기화
@@ -24,12 +20,10 @@ async function init() {
   updateStatusText(settings.isEnabled);
 
   // 통계 불러오기
-  await loadStats();
+  loadStats();
 
   // 이벤트 리스너
   enableToggle.addEventListener('change', handleToggle);
-  settingsBtn.addEventListener('click', openSettings);
-  helpBtn.addEventListener('click', openHelp);
 }
 
 /**
@@ -63,36 +57,14 @@ function updateStatusText(isEnabled) {
 /**
  * 통계 불러오기
  */
-async function loadStats() {
+function loadStats() {
   try {
     // 등록된 용어 수
-    const terms = await getAllTerms();
-    termCount.textContent = `${terms.length}개`;
-
-    // 오늘 조회 수 (localStorage 사용)
-    const today = new Date().toDateString();
-    const statsKey = `stats_${today}`;
-    const todayStats = localStorage.getItem(statsKey);
-    todayCount.textContent = `${todayStats || 0}회`;
+    const count = getTermsCount();
+    termCount.textContent = `${count}개`;
   } catch (error) {
     console.error('Failed to load stats:', error);
   }
-}
-
-/**
- * 설정 페이지 열기
- */
-function openSettings() {
-  chrome.runtime.openOptionsPage();
-}
-
-/**
- * 도움말 열기
- */
-function openHelp() {
-  chrome.tabs.create({
-    url: 'https://github.com/judy0/financial-terms-extension',
-  });
 }
 
 // 초기화 실행

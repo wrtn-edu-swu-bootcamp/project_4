@@ -1,7 +1,10 @@
 /**
  * Storage 유틸리티
- * Chrome Storage API와 IndexedDB 관리
+ * Chrome Storage API 관리 (설정)
+ * 용어 데이터는 정적 JSON 파일에서 로드
  */
+
+import { getAllTermsData } from '../data/index.js';
 
 // Chrome Storage 기본 설정값
 const DEFAULT_SETTINGS = {
@@ -60,87 +63,29 @@ export async function saveSetting(key, value) {
   }
 }
 
-// IndexedDB 관리
-const DB_NAME = 'FinancialTermsDB';
-const DB_VERSION = 1;
-
-/**
- * IndexedDB 초기화
- */
-export function initDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
-
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-
-      // terms ObjectStore
-      if (!db.objectStoreNames.contains('terms')) {
-        const termsStore = db.createObjectStore('terms', { keyPath: 'id' });
-        termsStore.createIndex('name', 'name', { unique: false });
-        termsStore.createIndex('category', 'category', { unique: false });
-      }
-
-      // userSettings ObjectStore
-      if (!db.objectStoreNames.contains('userSettings')) {
-        db.createObjectStore('userSettings', { keyPath: 'key' });
-      }
-
-      // usageStats ObjectStore
-      if (!db.objectStoreNames.contains('usageStats')) {
-        db.createObjectStore('usageStats', { keyPath: 'timestamp' });
-      }
-    };
-  });
-}
-
-/**
- * 용어 데이터 저장
- */
-export async function saveTerms(terms) {
-  const db = await initDB();
-  const transaction = db.transaction(['terms'], 'readwrite');
-  const store = transaction.objectStore('terms');
-
-  for (const term of terms) {
-    store.put(term);
-  }
-
-  return new Promise((resolve, reject) => {
-    transaction.oncomplete = () => resolve(true);
-    transaction.onerror = () => reject(transaction.error);
-  });
-}
+// ============================================
+// 용어 데이터 관리 (JSON 파일 기반)
+// ============================================
 
 /**
  * 모든 용어 가져오기
+ * 정적 JSON 파일에서 직접 로드
  */
-export async function getAllTerms() {
-  const db = await initDB();
-  const transaction = db.transaction(['terms'], 'readonly');
-  const store = transaction.objectStore('terms');
-
-  return new Promise((resolve, reject) => {
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+export function getAllTerms() {
+  return getAllTermsData();
 }
 
 /**
  * ID로 용어 가져오기
  */
-export async function getTermById(id) {
-  const db = await initDB();
-  const transaction = db.transaction(['terms'], 'readonly');
-  const store = transaction.objectStore('terms');
+export function getTermById(id) {
+  const allTerms = getAllTermsData();
+  return allTerms.find((term) => term.id === id) || null;
+}
 
-  return new Promise((resolve, reject) => {
-    const request = store.get(id);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+/**
+ * 용어 통계 가져오기
+ */
+export function getTermsCount() {
+  return getAllTermsData().length;
 }

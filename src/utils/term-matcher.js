@@ -5,10 +5,8 @@
 
 import { getAllTerms } from './storage.js';
 
-// 메모리 캐시
+// 메모리 캐시 (한 번만 로드)
 let termsCache = null;
-let cacheTimestamp = 0;
-const CACHE_DURATION = 5 * 60 * 1000; // 5분
 
 /**
  * 텍스트 정규화
@@ -26,33 +24,28 @@ function normalizeText(text) {
 
 /**
  * 캐시된 용어 목록 가져오기
+ * MVP: 정적 JSON 데이터를 메모리에 한 번만 로드
  */
-async function getCachedTerms() {
-  const now = Date.now();
-  
-  // 캐시가 유효하면 반환
-  if (termsCache && now - cacheTimestamp < CACHE_DURATION) {
-    return termsCache;
+function getCachedTerms() {
+  if (!termsCache) {
+    // 확장 프로그램에 내장된 정적 데이터 로드
+    termsCache = getAllTerms();
   }
-
-  // 캐시 갱신
-  termsCache = await getAllTerms();
-  cacheTimestamp = now;
   return termsCache;
 }
 
 /**
  * 용어 검색
  * @param {string} selectedText - 사용자가 선택한 텍스트
- * @returns {Promise<Object|null>} - 찾은 용어 객체 또는 null
+ * @returns {Object|null} - 찾은 용어 객체 또는 null
  */
-export async function findTerm(selectedText) {
+export function findTerm(selectedText) {
   if (!selectedText || selectedText.length < 2) {
     return null;
   }
 
   const normalized = normalizeText(selectedText);
-  const terms = await getCachedTerms();
+  const terms = getCachedTerms();
 
   // 정확한 이름 매칭
   let match = terms.find((term) => normalizeText(term.name) === normalized);
@@ -71,13 +64,13 @@ export async function findTerm(selectedText) {
 /**
  * 여러 용어 한 번에 검색
  * @param {string[]} textList - 텍스트 배열
- * @returns {Promise<Map>} - 텍스트-용어 매핑
+ * @returns {Map} - 텍스트-용어 매핑
  */
-export async function findMultipleTerms(textList) {
+export function findMultipleTerms(textList) {
   const results = new Map();
   
   for (const text of textList) {
-    const term = await findTerm(text);
+    const term = findTerm(text);
     if (term) {
       results.set(text, term);
     }
@@ -91,17 +84,15 @@ export async function findMultipleTerms(textList) {
  */
 export function clearCache() {
   termsCache = null;
-  cacheTimestamp = 0;
 }
 
 /**
  * 용어 검색 통계 (디버깅용)
  */
-export async function getSearchStats() {
-  const terms = await getCachedTerms();
+export function getSearchStats() {
+  const terms = getCachedTerms();
   return {
     totalTerms: terms.length,
     cacheValid: termsCache !== null,
-    cacheAge: Date.now() - cacheTimestamp,
   };
 }

@@ -1,0 +1,626 @@
+# 금융 용어 해설 Chrome 확장 프로그램 - Cursor Rules
+
+## 프로젝트 개요
+
+**서비스명**: 금융 용어 쉽게 (가칭)  
+**목적**: 금융 약관 읽기 흐름을 끊지 않고 사용자가 선택한 용어를 즉시 해설  
+**핵심 원칙**: 사용자 선택 기반 (드래그/더블클릭) - 자동 감지/전체 스캔 제외
+
+---
+
+## 1. 핵심 원칙 (절대 준수)
+
+### 1.1 사용자 선택 기반 동작 (CRITICAL)
+- ✅ **허용**: 사용자가 텍스트를 드래그하거나 더블클릭할 때만 동작
+- ❌ **금지**: 페이지 로드 시 자동으로 용어를 찾아 하이라이트하는 기능
+- ❌ **금지**: 마우스 호버만으로 자동 팝업 표시 (설정 옵션으로도 불가)
+- ❌ **금지**: 페이지 전체를 스캔하여 용어를 사전 감지하는 기능
+
+**이유**: 사용자가 완전히 통제하는 흐름만 허용하여 읽기 방해 최소화
+
+### 1.2 비침해성 (Non-Intrusive)
+- 웹 페이지의 기존 기능이나 레이아웃을 절대 방해하지 않음
+- Shadow DOM으로 스타일 완전 격리
+- 최소한의 DOM 조작
+- 페이지 로드 성능에 영향 없음
+
+### 1.3 범위 제한
+- **MVP 금융 상품**: 예금, 적금만 (대출, 보험, 투자 제외)
+- **타겟 용어**: 30-50개 핵심 용어만
+- **추가 기능**: 메모 기능만 허용 (우선순위 낮음)
+
+---
+
+## 2. 기술 스택
+
+### 2.1 필수 기술
+```
+- Chrome Extension Manifest V3 (필수)
+- JavaScript ES2022+
+- HTML5 + CSS3
+- JSON 파일 (용어 저장 - 정적 데이터)
+- Chrome Storage API (설정 저장)
+- Shadow DOM (스타일 격리)
+```
+
+### 2.2 금지 사항
+- ❌ 프레임워크 사용 금지 (React, Vue, Angular 등)
+- ❌ 외부 라이브러리 최소화 (번들 크기 유지)
+- ❌ TypeScript 사용 금지 (순수 JS만)
+- ❌ 빌드 도구 복잡도 최소화 (Vite만 허용)
+
+**이유**: 가볍고 빠른 확장 유지, 개발 단순화
+
+---
+
+## 3. 폴더 구조 (엄격 준수)
+
+```
+financial-project/
+├── manifest.json
+├── package.json
+├── vite.config.js
+├── src/
+│   ├── background/
+│   │   └── service-worker.js        # 백그라운드 워커
+│   ├── content/
+│   │   ├── content-script.js        # 메인 스크립트
+│   │   ├── selection-detector.js    # 텍스트 선택 감지 (200ms 디바운싱)
+│   │   ├── popup-renderer.js        # 팝업 렌더링 (Shadow DOM)
+│   │   └── content-style.css        # 스타일
+│   ├── popup/
+│   │   ├── popup.html
+│   │   ├── popup.js
+│   │   └── popup.css
+│   ├── options/
+│   │   ├── options.html
+│   │   ├── options.js
+│   │   └── options.css
+│   ├── onboarding/
+│   │   ├── onboarding.html
+│   │   ├── onboarding.js
+│   │   └── onboarding.css
+│   ├── utils/
+│   │   ├── storage.js               # 저장소 계층
+│   │   ├── term-matcher.js          # 용어 매칭 (정규화 + 캐싱)
+│   │   └── logger.js                # 로깅
+│   ├── data/
+│   │   ├── terms/                   # 용어 JSON 파일
+│   │   │   ├── interest-rate.json   # 금리 관련 (10개)
+│   │   │   ├── product-structure.json # 상품 구조 (12개)
+│   │   │   ├── tax-cost.json       # 세금/비용 (10개)
+│   │   │   ├── deposit-protection.json # 예금 보호 (6개)
+│   │   │   └── special-products.json # 특수 상품 (12개)
+│   │   └── index.js
+│   └── styles/
+│       ├── variables.css            # CSS 변수 (디자인 토큰)
+│       ├── reset.css
+│       └── common.css
+└── dist/                            # 빌드 출력
+```
+
+**금지**: 이 구조를 임의로 변경하거나 새로운 폴더 추가하지 말것
+
+---
+
+## 4. 코딩 규칙
+
+### 4.1 JavaScript 규칙
+
+```javascript
+// ✅ 좋은 예
+async function handleTextSelection(selectedText, position) {
+  const normalized = normalizeText(selectedText);
+  const term = await findTerm(normalized);
+  
+  if (term) {
+    renderPopup(term, position);
+  } else {
+    renderNoMatchPopup(selectedText, position);
+  }
+}
+
+// ❌ 나쁜 예 - 자동 스캔
+function autoHighlightTerms() {
+  const bodyText = document.body.innerText;
+  // ... 페이지 전체 스캔 - 절대 금지!
+}
+```
+
+**필수 패턴**:
+- 모든 비동기 함수에 `async/await` 사용
+- 에러 핸들링 필수 (`try/catch`)
+- 디바운싱 적용 (텍스트 선택 이벤트는 200ms)
+- 메모리 누수 방지 (이벤트 리스너 제거)
+
+### 4.2 이벤트 처리
+
+```javascript
+// ✅ 필수: 디바운싱 적용
+let debounceTimer = null;
+const DEBOUNCE_DELAY = 200; // 200ms
+
+document.addEventListener('mouseup', (e) => {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  
+  debounceTimer = setTimeout(() => {
+    const selection = window.getSelection();
+    const text = selection.toString().trim();
+    
+    if (isValidSelection(text)) {
+      handleTextSelection(text, getSelectionPosition(selection));
+    }
+  }, DEBOUNCE_DELAY);
+});
+
+// ❌ 금지: 디바운싱 없는 처리
+document.addEventListener('selectionchange', () => {
+  handleSelection(); // 너무 자주 호출됨!
+});
+```
+
+### 4.3 성능 최적화
+
+**캐싱 (필수)**:
+```javascript
+// 용어 데이터 메모리 캐싱 (5분 TTL)
+let cachedTerms = null;
+let cacheTime = null;
+const CACHE_TTL = 5 * 60 * 1000;
+
+async function getCachedTerms() {
+  if (cachedTerms && Date.now() - cacheTime < CACHE_TTL) {
+    return cachedTerms;
+  }
+  
+  cachedTerms = await getAllTerms();
+  cacheTime = Date.now();
+  return cachedTerms;
+}
+```
+
+**Shadow DOM (필수)**:
+```javascript
+function createPopup(term, position) {
+  const container = document.createElement('div');
+  const shadow = container.attachShadow({ mode: 'open' });
+  
+  // 스타일 주입 (격리)
+  const style = document.createElement('style');
+  style.textContent = getPopupStyles();
+  shadow.appendChild(style);
+  
+  // 콘텐츠 생성
+  const popup = document.createElement('div');
+  popup.innerHTML = generatePopupHTML(term);
+  shadow.appendChild(popup);
+  
+  return container;
+}
+```
+
+---
+
+## 5. 데이터 구조
+
+### 5.1 용어 데이터 (JSON 파일)
+
+```javascript
+{
+  id: "term-101",
+  name: "복리",
+  aliases: ["복리 이자", "복리계산"],
+  category: "금리 관련",
+  description: "이자에 이자가 붙는 방식...",
+  example: "100만원을 연 3% 복리로...",
+  importance: "장기 투자에서 복리 효과는...",
+  relatedTerms: ["단리", "연이율", "만기일시지급식"]
+}
+```
+
+**MVP 특징**:
+- 확장 프로그램에 내장된 정적 JSON 파일
+- 런타임에 메모리로 로드되어 즉시 접근
+- DB 쿼리 없이 동기적 검색 가능
+
+**제약**:
+- `name`: 2-30자
+- `aliases`: 최대 3개
+- `description`: 1-2문장 (200자 이내)
+- `example`: 구체적 숫자 포함 필수
+- `relatedTerms`: 최대 3개
+
+### 5.2 사용자 설정 (Chrome Storage)
+
+```javascript
+{
+  settings: {
+    enabled: true,                    // 확장 ON/OFF
+    selectionMethod: "both",          // "drag" | "dblclick" | "both"
+    popupPosition: "auto",            // "auto" | "top" | "bottom"
+    popupSize: "medium",              // "small" | "medium" | "large"
+    enableAnalytics: false            // 현재 미사용
+  },
+  metadata: {
+    version: "1.0.0",
+    installedAt: "2026-01-22T...",
+    onboardingCompleted: true
+  }
+}
+```
+
+---
+
+## 6. 스타일 가이드
+
+### 6.1 CSS 변수 (엄격 사용)
+
+```css
+/* src/styles/variables.css */
+:root {
+  /* Primary Colors */
+  --color-primary: #4A5B6C;
+  --color-primary-light: #E8EBF0;
+  --color-primary-dark: #2F3C4A;
+  
+  /* Neutral */
+  --color-gray-900: #1A1D23;
+  --color-gray-700: #4A4F5A;
+  --color-gray-500: #8B909A;
+  --color-gray-300: #D1D4DA;
+  --color-gray-100: #F5F6F8;
+  
+  /* Typography */
+  --font-size-body: 16px;
+  --font-size-body-sm: 14px;
+  --line-height-body: 1.6;
+  
+  /* Spacing */
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+  
+  /* Transitions */
+  --transition-base: 0.25s;
+  --ease-default: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+```
+
+**금지**:
+- ❌ 하드코딩된 색상값 사용 금지
+- ❌ 인라인 스타일 금지
+- ❌ `!important` 사용 최소화
+
+### 6.2 팝업 디자인
+
+```css
+.popup {
+  max-width: 400px;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-300);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(42, 52, 64, 0.12);
+  padding: var(--space-6);
+  animation: popupFadeIn 0.25s var(--ease-default);
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+---
+
+## 7. 금지 사항 (CRITICAL)
+
+### 7.1 절대 금지 기능
+```
+❌ 페이지 로드 시 자동 용어 하이라이트
+❌ 페이지 전체 DOM 스캔
+❌ 마우스 호버만으로 자동 팝업
+❌ 용어 자동 감지/추천
+❌ 사용자 행동 추적/분석
+❌ 외부 서버 통신
+❌ 쿠키/로컬스토리지에 개인정보 저장
+❌ 예금/적금 외 다른 금융 상품 추가
+❌ 용어 50개 초과
+```
+
+### 7.2 코드 작성 금지 패턴
+```javascript
+// ❌ 금지: 자동 스캔
+const allText = document.body.innerText;
+const terms = findAllTerms(allText);
+
+// ❌ 금지: 페이지 DOM 순회
+document.querySelectorAll('*').forEach(el => {
+  // ...
+});
+
+// ❌ 금지: MutationObserver로 자동 감지
+const observer = new MutationObserver(() => {
+  scanForTerms();
+});
+
+// ❌ 금지: 외부 API 호출
+fetch('https://external-api.com/terms');
+```
+
+---
+
+## 8. Manifest V3 설정
+
+```json
+{
+  "manifest_version": 3,
+  "name": "금융 용어 쉽게",
+  "version": "1.0.0",
+  "description": "금융 약관의 전문용어를 선택하면 즉시 쉬운 설명을 제공합니다",
+  
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  
+  "host_permissions": [
+    "https://*.kb.com/*",
+    "https://*.shinhan.com/*",
+    "https://*.hanabank.com/*",
+    "https://*.wooribank.com/*",
+    "https://*.kakaobank.com/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content-script.js"],
+      "css": ["src/content/content-style.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  
+  "options_page": "src/options/options.html",
+  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
+```
+
+**주의**:
+- `run_at: "document_idle"` 사용 (페이지 로드 영향 최소화)
+- `matches`를 너무 넓게 설정하지 말것
+- 최소 권한 원칙 준수
+
+---
+
+## 9. 테스트 체크리스트
+
+### 9.1 기능 테스트
+```
+□ 텍스트 드래그 선택 시 팝업 표시
+□ 더블클릭 시 팝업 표시
+□ 등록되지 않은 용어 선택 시 "미등록" 팝업
+□ ESC 키로 팝업 닫기
+□ 팝업 외부 클릭으로 닫기
+□ ON/OFF 토글 동작
+□ 설정 저장/복원
+□ 온보딩 플로우
+```
+
+### 9.2 성능 테스트
+```
+□ 텍스트 선택 → 팝업 표시: < 200ms
+□ 용어 검색 (캐시 히트): < 5ms
+□ 용어 검색 (캐시 미스): < 100ms
+□ 페이지 로드 영향: 0ms (측정 불가능)
+□ 메모리 사용: < 50MB
+```
+
+### 9.3 호환성 테스트
+```
+□ KB국민은행 사이트
+□ 신한은행 사이트
+□ 하나은행 사이트
+□ 카카오뱅크 사이트
+□ Chrome 109+
+□ Edge 109+
+```
+
+---
+
+## 10. 개발 워크플로우
+
+### 10.1 개발 시작
+```bash
+# 의존성 설치
+npm install
+
+# 개발 모드 (Watch)
+npm run dev
+
+# Chrome에서 Load Unpacked
+# chrome://extensions/ → 개발자 모드 → dist/ 폴더 선택
+```
+
+### 10.2 코드 작성 순서
+```
+1. 기획 문서 확인 (docs/)
+2. 데이터 구조 설계 (data/terms/)
+3. 유틸리티 함수 작성 (utils/)
+4. Content Script 구현 (content/)
+5. UI 컴포넌트 구현 (popup/, options/, onboarding/)
+6. 통합 테스트
+7. 성능 최적화
+```
+
+### 10.3 커밋 메시지
+```
+feat: 새로운 기능
+fix: 버그 수정
+perf: 성능 개선
+docs: 문서 변경
+style: 코드 스타일 변경
+refactor: 리팩토링
+test: 테스트 추가/수정
+```
+
+---
+
+## 11. 에러 핸들링
+
+### 11.1 필수 에러 처리
+```javascript
+// 모든 비동기 함수에 try/catch
+async function loadTerms() {
+  try {
+    const db = await initDB();
+    const terms = await getAllTerms(db);
+    return terms;
+  } catch (error) {
+    logger.error('Failed to load terms:', error);
+    // Fallback: localStorage 또는 기본 데이터
+    return getDefaultTerms();
+  }
+}
+
+// 이벤트 리스너에서도 에러 처리
+document.addEventListener('mouseup', async (e) => {
+  try {
+    await handleMouseUp(e);
+  } catch (error) {
+    logger.error('MouseUp error:', error);
+  }
+});
+```
+
+### 11.2 로깅 레벨
+```javascript
+// 개발: DEBUG 이상
+// 프로덕션: WARN 이상
+const LOG_LEVELS = {
+  DEBUG: 0,
+  INFO: 1,
+  WARN: 2,
+  ERROR: 3
+};
+```
+
+---
+
+## 12. 보안 규칙
+
+### 12.1 데이터 프라이버시
+```
+✅ 모든 데이터는 로컬 저장 (JSON 파일, Chrome Storage)
+✅ 외부 서버 통신 없음
+✅ 사용자 추적 없음
+✅ 개인정보 수집 없음
+✅ 조회 기록 저장 안 함
+```
+
+### 12.2 CSP 준수
+```
+✅ 인라인 스크립트 금지
+✅ eval() 사용 금지
+✅ 외부 리소스 로딩 금지
+✅ 로컬 파일만 사용
+```
+
+---
+
+## 13. AI 코딩 어시스턴트 지시사항
+
+**Cursor가 코드를 작성할 때**:
+
+1. **절대 추가하지 말것**:
+   - 자동 용어 감지 기능
+   - 페이지 스캔 기능
+   - 호버 기반 팝업
+   - 분석/추적 코드
+   - 외부 API 호출
+
+2. **필수 확인 사항**:
+   - 텍스트 선택은 사용자 액션으로만 트리거되는가?
+   - 디바운싱이 적용되었는가?
+   - Shadow DOM을 사용하고 있는가?
+   - 에러 핸들링이 있는가?
+   - 메모리 누수 가능성은 없는가?
+
+3. **코드 리뷰 기준**:
+   - 이 코드가 페이지 로드 시 자동으로 실행되는가? → 금지
+   - 이 코드가 DOM을 과도하게 조작하는가? → 최소화
+   - 이 코드가 사용자 선택 없이 동작하는가? → 금지
+
+---
+
+## 14. 참고 문서
+
+### 14.1 프로젝트 문서
+- `docs/금융_용어_해설서비스_기획안_3차.md`: 전체 기획
+- `docs/wireframes/wireframe_금융용어해설서비스_2차.md`: UI 플로우
+- `docs/디자인_가이드_금융용어해설서비스_2차.md`: 디자인 시스템
+- `docs/코드_아키텍처.md`: 기술 아키텍처
+
+### 14.2 외부 레퍼런스
+- Chrome Extension 공식 문서
+- Manifest V3 가이드
+- Shadow DOM 스펙
+- Chrome Storage API
+
+---
+
+## 15. 버전 관리
+
+**현재 버전**: 1.0.0 (MVP)  
+**다음 버전**: 1.1.0 (Phase 2 - 자동 하이라이트 옵션 추가)
+
+**버전 정책**:
+- Major (X.0.0): 큰 기능 변경
+- Minor (0.X.0): 새로운 기능 추가
+- Patch (0.0.X): 버그 수정
+
+---
+
+## 요약: 핵심 제약사항
+
+```
+1. 사용자 선택 기반만 동작 (드래그/더블클릭)
+2. 자동 감지/스캔 절대 금지
+3. 예금/적금만, 용어 30-50개로 제한
+4. 외부 통신 금지, 100% 로컬 동작
+5. Shadow DOM 스타일 격리 필수
+6. Manifest V3 + 순수 JS (프레임워크 금지)
+7. 성능: 선택→팝업 200ms 이내
+8. 비침해성: 페이지 기능/스타일 방해 금지
+```
+
+이 규칙을 벗어나는 코드는 즉시 거부됩니다.
+
+---
+
+**문서 버전**: 1.0.0  
+**최종 수정**: 2026-01-22  
+**작성자**: judy0
