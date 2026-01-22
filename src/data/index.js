@@ -8,6 +8,8 @@ import productStructureTerms from './terms/product-structure.json';
 import taxCostTerms from './terms/tax-cost.json';
 import depositProtectionTerms from './terms/deposit-protection.json';
 import specialProductsTerms from './terms/special-products.json';
+import rateBasicsTerms from './terms/rate-basics.json';
+import taxBasicsTerms from './terms/tax-basics.json';
 
 /**
  * 각 용어에 카테고리 추가
@@ -30,6 +32,8 @@ export function getAllTermsData() {
     ...addCategoryToTerms(taxCostTerms),
     ...addCategoryToTerms(depositProtectionTerms),
     ...addCategoryToTerms(specialProductsTerms),
+    ...addCategoryToTerms(rateBasicsTerms),
+    ...addCategoryToTerms(taxBasicsTerms),
   ];
 
   return allTerms;
@@ -45,6 +49,8 @@ export function getTermsStats() {
     '세금 및 비용': taxCostTerms.terms.length,
     '예금 보호': depositProtectionTerms.terms.length,
     '특수 상품': specialProductsTerms.terms.length,
+    '금리': rateBasicsTerms.terms.length,
+    '세금': taxBasicsTerms.terms.length,
     총계: getAllTermsData().length,
   };
 }
@@ -59,6 +65,8 @@ export function getTermsByCategory() {
     '세금 및 비용': taxCostTerms.terms,
     '예금 보호': depositProtectionTerms.terms,
     '특수 상품': specialProductsTerms.terms,
+    '금리': rateBasicsTerms.terms,
+    '세금': taxBasicsTerms.terms,
   };
 }
 

@@ -179,8 +179,8 @@ export function renderNoMatchPopup(text, targetRect) {
           <a href="https://search.naver.com/search.naver?query=${encodeURIComponent(text)}+금융+용어" target="_blank" class="search-link">
             네이버 검색
           </a>
-          <a href="https://fine.fss.or.kr/" target="_blank" class="search-link">
-            금융감독원 용어사전
+          <a href="https://dic.hankyung.com/economy/view/?seq=416" target="_blank" class="search-link">
+            한국경제 용어사전
           </a>
         </div>
       </div>
