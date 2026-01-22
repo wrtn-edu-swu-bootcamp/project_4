@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "금융 용어 쉽게",
+  "version": "1.0.0",
+  "description": "금융 약관 읽기 중 선택한 용어를 즉시 해설해주는 도구",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.kb.com/*",
+    "https://*.shinhan.com/*",
+    "https://*.hanabank.com/*",
+    "https://*.wooribank.com/*",
+    "https://*.nhbank.com/*",
+    "https://*.kakaobank.com/*",
+    "https://*.tossbank.com/*",
+    "https://*.kbanknow.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content-script.js"],
+      "css": ["src/content/content-style.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon-16.png",
+      "32": "assets/icons/icon-32.png",
+      "48": "assets/icons/icon-48.png",
+      "128": "assets/icons/icon-128.png"
+    }
+  },
+  "options_page": "src/options/options.html",
+  "icons": {
+    "16": "assets/icons/icon-16.png",
+    "32": "assets/icons/icon-32.png",
+    "48": "assets/icons/icon-48.png",
+    "128": "assets/icons/icon-128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}

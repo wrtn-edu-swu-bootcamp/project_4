@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>환영합니다 - 금융 용어 쉽게</title>
+    <link rel="stylesheet" href="../styles/variables.css" />
+    <link rel="stylesheet" href="../styles/reset.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+  </head>
+  <body>
+    <div class="onboarding-container">
+      <!-- Page 1: 환영 -->
+      <div class="onboarding-page active" data-page="1">
+        <div class="page-content">
+          <div class="logo">💰</div>
+          <h1 class="page-title">금융 용어 쉽게</h1>
+          <p class="page-subtitle">약관 읽기가 쉬워집니다</p>
+
+          <div class="feature-grid">
+            <div class="feature-item">
+              <div class="feature-icon">🖱️</div>
+              <div class="feature-title">단어 선택</div>
+              <div class="feature-desc">드래그 또는 더블클릭</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">💡</div>
+              <div class="feature-title">즉시 설명 표시</div>
+              <div class="feature-desc">팝업으로 쉽게 확인</div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">✅</div>
+              <div class="feature-title">빠른 이해</div>
+              <div class="feature-desc">페이지 이탈 없이</div>
+            </div>
+          </div>
+
+          <p class="page-message">
+            금융 상품의 약관과 상품 설명을 읽을 때<br />
+            이해 안 되는 단어를 선택하면<br />
+            즉시 쉬운 설명을 확인할 수 있습니다
+          </p>
+        </div>
+
+        <div class="page-footer">
+          <div class="progress-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <button class="btn btn-primary" id="nextBtn1">다음</button>
+        </div>
+      </div>
+
+      <!-- Page 2: 사용 방법 -->
+      <div class="onboarding-page" data-page="2">
+        <div class="page-content">
+          <h1 class="page-title">이렇게 사용하세요</h1>
+
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <div class="step-title">은행 웹사이트 방문</div>
+                <div class="step-desc">
+                  KB국민은행, 신한은행 등<br />
+                  어떤 금융기관이든 작동합니다
+                </div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <div class="step-title">이해 안 되는 단어 선택</div>
+                <div class="step-desc">
+                  "복리", "세전금리" 등<br />
+                  드래그 또는 더블클릭으로 선택
+                </div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <div class="step-title">팝업에서 설명 확인</div>
+                <div class="step-desc">
+                  쉬운 설명과 예시를<br />
+                  선택 즉시 확인
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-box">
+            <div class="tip-icon">💡</div>
+            <div class="tip-content">
+              <strong>팁:</strong> 툴바 아이콘을 클릭하면 언제든 ON/OFF 가능합니다
+            </div>
+          </div>
+        </div>
+
+        <div class="page-footer">
+          <div class="progress-dots">
+            <span class="dot"></span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary" id="backBtn1">이전</button>
+            <button class="btn btn-primary" id="nextBtn2">다음</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page 3: 이용약관 동의 -->
+      <div class="onboarding-page" data-page="3">
+        <div class="page-content">
+          <h1 class="page-title">시작하기 전에</h1>
+
+          <div class="disclaimer-box">
+            <div class="disclaimer-icon">⚠️</div>
+            <h3 class="disclaimer-title">중요 안내</h3>
+            <ul class="disclaimer-list">
+              <li>본 서비스는 참고용 정보 제공 서비스입니다</li>
+              <li>정확한 정보는 해당 금융기관에 확인하세요</li>
+              <li>투자 자문이나 상품 추천이 아닙니다</li>
+            </ul>
+          </div>
+
+          <div class="consent-section">
+            <label class="checkbox-label">
+              <input type="checkbox" id="agreeTerms" class="checkbox-input" required />
+              <span class="checkbox-text">
+                <a href="#" id="termsLink" class="link">이용약관</a>에 동의합니다 (필수)
+              </span>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="agreePrivacy" class="checkbox-input" required />
+              <span class="checkbox-text">
+                <a href="#" id="privacyLink" class="link">개인정보처리방침</a>에 동의합니다 (필수)
+              </span>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" id="allowAnalytics" class="checkbox-input" />
+              <span class="checkbox-text">
+                익명 사용 통계 수집에 동의합니다 (선택)
+                <small class="checkbox-hint">서비스 개선 목적으로만 사용</small>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="page-footer">
+          <div class="progress-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot active"></span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary" id="backBtn2">이전</button>
+            <button class="btn btn-primary" id="startBtn" disabled>시작하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="onboarding.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>금융 용어 쉽게</title>
+    <link rel="stylesheet" href="../styles/variables.css" />
+    <link rel="stylesheet" href="../styles/reset.css" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup-container">
+      <header class="popup-header">
+        <h1 class="popup-title">금융 용어 쉽게</h1>
+        <span class="popup-version">v1.0.0</span>
+      </header>
+
+      <main class="popup-main">
+        <div class="status-section">
+          <div class="status-label">서비스 상태</div>
+          <div class="status-toggle">
+            <label class="toggle">
+              <input type="checkbox" id="enableToggle" class="toggle-input" checked />
+              <span class="toggle-slider"></span>
+            </label>
+            <span id="statusText" class="status-text">활성</span>
+          </div>
+        </div>
+
+        <div class="quick-stats">
+          <div class="stat-item">
+            <div class="stat-label">등록된 용어</div>
+            <div class="stat-value" id="termCount">0개</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">오늘 조회</div>
+            <div class="stat-value" id="todayCount">0회</div>
+          </div>
+        </div>
+
+        <div class="action-section">
+          <button class="action-button" id="settingsBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v6m0 6v6m-6-6h6m6 0h6"/>
+            </svg>
+            전체 설정
+          </button>
+          <button class="action-button" id="helpBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            도움말
+          </button>
+        </div>
+      </main>
+
+      <footer class="popup-footer">
+        <p class="popup-disclaimer">
+          본 서비스는 참고용 정보를 제공합니다.<br />
+          정확한 정보는 해당 금융기관에 확인하세요.
+        </p>
+      </footer>
+    </div>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

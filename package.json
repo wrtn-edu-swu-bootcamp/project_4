@@ -1,0 +1,30 @@
+{
+  "name": "financial-terms-extension",
+  "version": "1.0.0",
+  "description": "금융 용어 해설 Chrome 확장 프로그램 - 사용자가 선택한 금융 용어를 즉시 해설",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js",
+    "format": "prettier --write \"src/**/*.{js,css,html}\""
+  },
+  "keywords": [
+    "chrome-extension",
+    "financial-terms",
+    "banking",
+    "education"
+  ],
+  "author": "judy0",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.0",
+    "@vitejs/plugin-legacy": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
