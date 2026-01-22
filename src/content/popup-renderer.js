@@ -330,6 +330,7 @@ function getPopupStyles() {
       font-size: 14px;
       line-height: 1.6;
       color: #1a1d23;
+      white-space: pre-line;
     }
     
     .related-terms {
