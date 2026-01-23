@@ -2,7 +2,7 @@
   <img src="assets/icons/icon-128.png" width="80" alt="금융 용어 쉽게 로고" />
 </p>
 
-<h1 align="center">금융 용어 쉽게</h1>
+<h1 align="center">금융 용어 쉽고 빠르게</h1>
 
 <p align="center">
   금융 약관, 이제 쉽게 읽어요 ✨
